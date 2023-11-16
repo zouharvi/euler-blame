@@ -7,9 +7,9 @@ import argparse
 random.seed(0)
 
 args = argparse.ArgumentParser()
-args.add_argument("--level-true-cutoff", type=int, default=2)
-args.add_argument("--level-max", type=int, default=50)
-args.add_argument("--rand-prop", type=float, default=0.2)
+args.add_argument("--level-true-cutoff", type=int, default=5)
+args.add_argument("--level-max", type=int, default=60)
+args.add_argument("--rand-prop", type=float, default=0.1)
 args.add_argument("--user", default=None)
 args = args.parse_args()
 
@@ -88,7 +88,11 @@ def _get_top_level(path):
         leave=False,
     ):
         out.append(get_size_count(os.path.join(path, x), level=1))
-    print(f"{path:<40}:", format_output(*np.average(out, axis=0)))
+
+    if not out:
+        print(f"{path:<40}:", format_output(0, 0))
+    else:
+        print(f"{path:<40}:", format_output(*np.average(out, axis=0)))
 
 if args.user:
     get_top_level(os.path.join("/cluster/project/sachan/", args.user))
