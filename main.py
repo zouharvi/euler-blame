@@ -15,6 +15,7 @@ args = args.parse_args()
 
 BLACKLIST = {"dosdevices/z:/"}
 
+
 def get_size_count(path, level=0):
     if level > args.level_max or any(x in path for x in BLACKLIST):
         return None
@@ -30,32 +31,40 @@ def get_size_count(path, level=0):
         # return None if it can not be executed (listed)
         if not os.access(path, os.X_OK) or not os.access(path, os.R_OK):
             return None
-            
+
         # in some weird configurations the previous check does not fire
         try:
-            children = [os.path.join(path, child) for child in os.listdir(path)]
+            children = [os.path.join(path, child)
+                        for child in os.listdir(path)]
         except Exception:
             return None
-        
+
         if not children:
             return (0, 0)
-        
+
         # don't do estimation for top directories
         if level > args.level_true_cutoff:
             # select children for which true size will be calculated
-            children_true = random.sample(children, k=int(len(children)*(1-args.rand_prop)))
+            children_true = random.sample(
+                children,
+                k=int(len(children) * (1 - args.rand_prop))
+            )
         else:
             children_true = children
 
-        children_true = [get_size_count(child, level+1) for child in children_true]
+        children_true = [
+            get_size_count(child, level + 1)
+            for child in children_true
+        ]
         children_true = [x for x in children_true if x is not None]
-        
+
         if not children_true:
             return (0, 0)
         avg_size_count = np.average(children_true, axis=0)
-        return avg_size_count*len(children)
+        return avg_size_count * len(children)
     else:
         return (0, 0)
+
 
 def format_output(dir_size, dir_count):
     if dir_size < 1:
@@ -76,6 +85,7 @@ def get_top_level(path):
     except Exception:
         pass
 
+
 def _get_top_level(path):
     if not os.path.isdir(path) or path.split("/")[-1].startswith("."):
         return
@@ -93,6 +103,7 @@ def _get_top_level(path):
         print(f"{path:<40}:", format_output(0, 0))
     else:
         print(f"{path:<40}:", format_output(*np.average(out, axis=0)))
+
 
 if args.user:
     get_top_level(os.path.join("/cluster/project/sachan/", args.user))
