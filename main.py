@@ -34,8 +34,10 @@ def get_size_count(path, level=0):
 
         # in some weird configurations the previous check does not fire
         try:
-            children = [os.path.join(path, child)
-                        for child in os.listdir(path)]
+            children = [
+                os.path.join(path, child)
+                for child in os.listdir(path)
+            ]
         except Exception:
             return None
 
@@ -106,11 +108,12 @@ def _get_top_level(path):
 
 
 if args.user:
-    get_top_level(os.path.join("/cluster/project/sachan/", args.user))
-    get_top_level(os.path.join("/cluster/work/sachan/", args.user))
+    users = [args.user]
 else:
-    for user in sorted(os.listdir("/cluster/project/sachan/")):
-        get_top_level(os.path.join("/cluster/project/sachan/", user))
+    users = [os.listdir("/cluster/work/sachan/")]
 
-    for user in sorted(os.listdir("/cluster/work/sachan/")):
-        get_top_level(os.path.join("/cluster/work/sachan/", user))
+for user in sorted(users):
+    get_top_level(os.path.join("/cluster/project/sachan/", user))
+
+for user in sorted(users):
+    get_top_level(os.path.join("/cluster/work/sachan/", user))
