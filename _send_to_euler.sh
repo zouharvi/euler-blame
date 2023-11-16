@@ -1,0 +1,1 @@
+rsync -r --filter=':- .gitignore' --exclude '.git/*' ./ euler:/cluster/home/vzouhar/euler-blame

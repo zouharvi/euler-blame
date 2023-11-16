@@ -1,0 +1,1 @@
+nohup python3 euler-blame/main.py > euler-blame/out_cur &
